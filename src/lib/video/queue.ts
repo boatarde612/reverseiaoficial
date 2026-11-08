@@ -180,5 +180,3 @@ async function runJob({ job, file, info, run }: Pending) {
   }
 }
 
-// Keep exec import used for future steps that need raw access (e.g. combos).
-export { exec as runCommand };

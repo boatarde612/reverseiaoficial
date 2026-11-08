@@ -60,7 +60,7 @@ export class TemplateTracker {
 
   private sample(frame: Uint8Array, x: number, y: number, out: Float32Array) {
     const base = y * this.W + x;
-    for (let k = 0; k < this.offsets.length; k++) out[k] = frame[base + this.offsets[k]];
+    for (let k = 0; k < this.offsets.length; k++) out[k] = frame[base + this.offsets[k]!]!;
   }
 
   /** Normalized cross-correlation in [-1, 1] between the template and the patch at (x, y). */
@@ -73,8 +73,8 @@ export class TemplateTracker {
     let st2 = 0;
     let sit = 0;
     for (let k = 0; k < n; k++) {
-      const a = frame[base + this.offsets[k]];
-      const b = this.tpl[k];
+      const a = frame[base + this.offsets[k]!]!;
+      const b = this.tpl[k]!;
       si += a;
       si2 += a * a;
       st += b;
@@ -126,7 +126,7 @@ export class TemplateTracker {
       if (best > 0.75) {
         const patch = new Float32Array(this.tpl.length);
         this.sample(frame, bx, by, patch);
-        for (let k = 0; k < patch.length; k++) this.tpl[k] = 0.9 * this.tpl[k] + 0.1 * patch[k];
+        for (let k = 0; k < patch.length; k++) this.tpl[k] = 0.9 * this.tpl[k]! + 0.1 * patch[k]!;
       }
     } else {
       // Occluded or lost: coast on the predicted motion and widen the search next frame.
@@ -172,7 +172,7 @@ export function smooth(values: number[], radius: number): number[] {
       let s = 0;
       let c = 0;
       for (let j = Math.max(0, i - radius); j <= Math.min(cur.length - 1, i + radius); j++) {
-        s += cur[j];
+        s += cur[j]!;
         c++;
       }
       next[i] = s / c;

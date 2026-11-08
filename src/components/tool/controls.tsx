@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { INTENSITIES, type Intensity } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 
-export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+export function Field({ label, hint, children }: { label: string; hint?: string | undefined; children: ReactNode }) {
   return (
     <div className="space-y-2.5">
       <div className="flex items-baseline justify-between gap-3">
@@ -117,7 +117,7 @@ export function SliderField({
         min={min}
         max={max}
         step={step}
-        onValueChange={(v) => onChange(v[0])}
+        onValueChange={(v) => onChange(v[0] ?? value)}
         className="py-2"
         aria-label={label}
       />

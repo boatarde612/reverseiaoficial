@@ -84,7 +84,7 @@ export function timeMap(curve: Keyframe[], duration: number, step = 0.1): Keyfra
 
 export function outputDuration(curve: Keyframe[], duration: number): number {
   const map = timeMap(curve, duration, duration);
-  return map[map.length - 1][1];
+  return map[map.length - 1]![1];
 }
 
 /** atempo accepts 0.5–2.0 per instance in the bundled FFmpeg; chain to reach other speeds. */

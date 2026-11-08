@@ -53,13 +53,13 @@ async function analyzeMotion(
   const cx: Keyframe[] = [];
   const cy: Keyframe[] = [];
   for (let i = 0; i < count; i += stepEvery) {
-    cx.push([i / fps, xs[i]]);
-    cy.push([i / fps, ys[i]]);
+    cx.push([i / fps, xs[i]!]);
+    cy.push([i / fps, ys[i]!]);
   }
   const last = count - 1;
   if (last % stepEvery !== 0) {
-    cx.push([last / fps, xs[last]]);
-    cy.push([last / fps, ys[last]]);
+    cx.push([last / fps, xs[last]!]);
+    cy.push([last / fps, ys[last]!]);
   }
   return { cx, cy };
 }
@@ -117,7 +117,7 @@ async function markerPng(w: number, h: number): Promise<Uint8Array> {
 
 function cropSize(W: number, H: number, aspect: FrameAspect) {
   if (aspect === "zoom") return { cw: even(W / 1.5), ch: even(H / 1.5) };
-  const [a, b] = aspect.split(":").map(Number);
+  const [a = 9, b = 16] = aspect.split(":").map(Number);
   const r = a / b;
   if (W / H > r) return { cw: even(H * r), ch: even(H) };
   return { cw: even(W), ch: even(W / r) };

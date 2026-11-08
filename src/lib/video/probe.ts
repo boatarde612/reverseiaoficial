@@ -36,7 +36,7 @@ export function parseProbe(log: string): MediaInfo | null {
     height,
     fps: fps && fps > 0 && fps < 1000 ? fps : null,
     hasAudio: /Stream #\d+:\d+.*Audio:/.test(log),
-    videoCodec: codec ? codec[1] : "desconhecido",
+    videoCodec: codec?.[1] ?? "desconhecido",
   };
 }
 

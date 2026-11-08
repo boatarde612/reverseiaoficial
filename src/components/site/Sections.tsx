@@ -95,11 +95,11 @@ export const FAQ = [
   },
   {
     q: "Quanto tempo demora o processamento?",
-    a: "O tempo depende da duração, resolução do vídeo, ferramenta escolhida e capacidade do servidor.",
+    a: "O tempo depende da duração, resolução do vídeo, ferramenta escolhida e capacidade do seu aparelho.",
   },
   {
     q: "Meus vídeos são armazenados?",
-    a: "Os vídeos são enviados para processamento. Consulte nossa Política de Privacidade para conhecer os prazos de armazenamento e exclusão.",
+    a: "Não. Os vídeos são processados no seu próprio aparelho e não são enviados para nenhum servidor. Consulte nossa Política de Privacidade para saber como os arquivos temporários são apagados.",
   },
 ];
 

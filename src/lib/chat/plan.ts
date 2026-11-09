@@ -52,9 +52,10 @@ export const PLAN_DEFAULTS: { [K in ToolId]: z.infer<(typeof SETTINGS_SCHEMAS)[K
 /** Processing order for combos: framing first, then speed, then look, motion effects last. */
 export const COMBO_ORDER: ToolId[] = ["tracking", "zoom", "time-remap", "reverse", "qualidade", "rsmb", "fps-mod"];
 
+export type SettingValue = string | number | boolean | { x: number; y: number; w: number; h: number } | null;
 export interface PlanStep {
   tool: ToolId;
-  settings: Record<string, unknown>;
+  settings: Record<string, SettingValue>;
 }
 
 /** Merges AI-provided partial settings onto defaults and validates them. Throws on invalid values. */
@@ -69,10 +70,10 @@ export function normalizePlan(raw: unknown): PlanStep[] {
     seen.add(tool);
     const partial = ((item as { settings?: object }).settings ?? {}) as Record<string, unknown>;
     const merged = { ...PLAN_DEFAULTS[tool], ...partial };
-    steps.push({ tool, settings: SETTINGS_SCHEMAS[tool].parse(merged) as Record<string, unknown> });
+    steps.push({ tool, settings: SETTINGS_SCHEMAS[tool].parse(merged) as Record<string, SettingValue> });
   }
   return steps.sort((a, b) => COMBO_ORDER.indexOf(a.tool) - COMBO_ORDER.indexOf(b.tool));
 }
 
 /** Steps that need the user to mark an object on the first frame. */
-export const needsBox = (s: PlanStep) => s.tool === "tracking" || (s.tool === "zoom" && s.settings.mode === "track");
+export const needsBox = (s: PlanStep) => s.tool === "tracking" || (s.tool === "zoom" && s.settings["mode"] === "track");

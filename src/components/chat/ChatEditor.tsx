@@ -7,7 +7,7 @@ import { RegionSelector } from "@/components/tool/RegionSelector";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { chatTurn } from "@/lib/chat/chat.functions";
+import { chatTurn, type ChatTurnResult } from "@/lib/chat/chat.functions";
 import { needsBox, type PlanStep } from "@/lib/chat/plan";
 import { getTool } from "@/lib/tools";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,7 @@ interface Msg {
   role: "user" | "assistant";
   text: string;
   plan?: PlanStep[];
-  attachment?: string;
+  attachment?: string | undefined;
   /** Session-only fields (not saved). */
   jobId?: string;
   resultUrl?: string;
@@ -59,7 +59,8 @@ const toDataUrl = (b: Blob) =>
   });
 
 function describe(step: PlanStep): string {
-  const s = step.settings as Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const s = step.settings as any;
   const parts: string[] = [];
   if (s.intensity) parts.push(`intensidade ${s.intensity}`);
   if (step.tool === "fps-mod") parts.push(`${s.targetFps} FPS`);
@@ -152,7 +153,7 @@ export function ChatEditor() {
         role: m.role,
         text: (m.plan ? `${m.text}\n[plano: ${JSON.stringify(m.plan)}]` : m.text).slice(0, 4000),
       }));
-      const res = await ask({ data: { history, video: vid?.info ?? null, frames, lastPlan } });
+      const res: ChatTurnResult = await ask({ data: { history, video: vid?.info ?? null, frames, lastPlan } });
       if (res.error) throw new Error(res.error);
       setMsgs((m) => [...m, { id: uid(), role: "assistant", text: res.reply, plan: res.plan ?? undefined }]);
     } catch (e) {
@@ -260,7 +261,7 @@ export function ChatEditor() {
                     )}
                     {m.plan === lastPlan && (
                       <>
-                        {m.plan.some((s) => s.tool === "fps-mod" || s.tool === "rsmb" || (s.tool === "qualidade" && s.settings.upscale === 2160)) && (
+                        {m.plan.some((s) => s.tool === "fps-mod" || s.tool === "rsmb" || (s.tool === "qualidade" && s.settings["upscale"] === 2160)) && (
                           <p className="text-xs text-muted-foreground">Inclui efeitos pesados: no celular pode levar vários minutos.</p>
                         )}
                         <Button variant="hero" className="w-full" disabled={!!reason || running} onClick={() => confirm(m.plan!)}>

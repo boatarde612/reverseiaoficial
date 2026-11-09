@@ -25,7 +25,7 @@ export function SiteHeader() {
             FAQ
           </Link>
           <Button asChild variant="hero" size="sm" className="rounded-full px-4">
-            <Link to="/ferramentas">Começar</Link>
+            <Link to="/chat">Chat IA</Link>
           </Button>
         </nav>
       </div>
@@ -35,6 +35,7 @@ export function SiteHeader() {
 
 const FOOTER_LINKS = [
   { to: "/", label: "Início" },
+  { to: "/chat", label: "Chat IA" },
   { to: "/ferramentas", label: "Ferramentas" },
   { to: "/faq", label: "FAQ" },
   { to: "/privacidade", label: "Política de Privacidade" },

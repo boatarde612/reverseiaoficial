@@ -45,7 +45,7 @@ function Index() {
           </p>
           <div className="mt-8 flex flex-col gap-3 animate-fade-up sm:flex-row">
             <Button asChild variant="hero" size="xl" className="w-full sm:w-auto">
-              <Link to="/ferramentas">
+              <Link to="/chat">
                 COMEÇAR AGORA <ArrowRight />
               </Link>
             </Button>

@@ -137,7 +137,8 @@ export const fpsPipeline: Pipeline<FpsSettings> = async (ctx, s) => {
 
 export interface QualitySettings {
   intensity: Intensity;
-  upscale: boolean;
+  /** Target short side: 0 keeps the original; 1080, 1440 or 2160 (4K). */
+  upscale: 0 | 1080 | 1440 | 2160;
 }
 
 const QUALITY_LEVELS: Record<Intensity, string[]> = {
@@ -151,8 +152,8 @@ export const qualityPipeline: Pipeline<QualitySettings> = async (ctx, s) => {
   const out = ctx.tmp("mp4");
   const filters = ["setpts=PTS-STARTPTS"];
   const short = Math.min(ctx.info.width, ctx.info.height);
-  if (s.upscale && short < 1080) {
-    const k = 1080 / short;
+  if (s.upscale && short < s.upscale) {
+    const k = s.upscale / short;
     filters.push(`scale=${Math.round((ctx.info.width * k) / 2) * 2}:${Math.round((ctx.info.height * k) / 2) * 2}:flags=lanczos`);
   }
   filters.push(...QUALITY_LEVELS[s.intensity], EVEN);

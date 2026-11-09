@@ -154,3 +154,26 @@ export async function extractFrame(file: File, maxWidth = 960): Promise<Blob | n
     await deleteFile(outName);
   }
 }
+
+/** `count` frames spread over the clip, as small JPEGs (for AI analysis). */
+export async function extractFrames(file: File, duration: number, count = 4, maxWidth = 448): Promise<Blob[]> {
+  const stamp = Date.now();
+  const inName = `frames_in_${stamp}.${file.name.split(".").pop()}`;
+  await writeFile(inName, new Uint8Array(await file.arrayBuffer()));
+  const out: Blob[] = [];
+  try {
+    for (let i = 0; i < count; i++) {
+      const t = (duration * (i + 0.5)) / count;
+      const name = `frames_${stamp}_${i}.jpg`;
+      const { code } = await exec(["-ss", t.toFixed(3), "-i", inName, "-frames:v", "1", "-vf", `scale='min(${maxWidth},iw)':-2`, "-q:v", "5", name]);
+      if (code === 0) {
+        const data = await readFile(name);
+        out.push(new Blob([data.slice().buffer], { type: "image/jpeg" }));
+      }
+      await deleteFile(name);
+    }
+  } finally {
+    await deleteFile(inName);
+  }
+  return out;
+}

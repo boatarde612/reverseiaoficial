@@ -18,7 +18,7 @@ export interface JobResult {
 
 export interface Job {
   id: string;
-  tool: ToolId;
+  tool: ToolId | "combo";
   status: JobStatus;
   progress: number;
   stage: string;
@@ -58,7 +58,7 @@ export const jobStore = {
 
 class Cancelled extends Error {}
 
-export function enqueue<S>(tool: ToolId, file: File, info: MediaInfo, pipeline: Pipeline<S>, settings: S): string {
+export function enqueue<S>(tool: ToolId | "combo", file: File, info: MediaInfo, pipeline: Pipeline<S>, settings: S): string {
   const id = `${tool}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
   const job: Job = {
     id,

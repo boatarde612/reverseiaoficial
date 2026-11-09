@@ -112,20 +112,30 @@ const fps: ToolDefinition<FpsSettings> = {
 };
 
 const quality: ToolDefinition<QualitySettings> = {
-  defaults: { intensity: 20, upscale: false },
+  defaults: { intensity: 20, upscale: 0 },
   pipeline: qualityPipeline,
   needsFrame: () => false,
   ready: () => null,
   Settings: ({ value, onChange, info }) => (
     <>
       <IntensityPicker value={value.intensity} onChange={(intensity) => onChange({ ...value, intensity })} />
-      {info && Math.min(info.width, info.height) < 1080 && (
-        <SwitchField
-          label="Aumentar para 1080p"
-          description="Amplia com filtro Lanczos antes de realçar os detalhes."
-          checked={value.upscale}
+      <Field label="Resolução de saída" hint="Ampliação com filtro Lanczos">
+        <Chips
+          columns={4}
+          value={value.upscale}
           onChange={(upscale) => onChange({ ...value, upscale })}
+          options={(
+            [
+              { value: 0, label: "Original" },
+              { value: 1080, label: "1080p" },
+              { value: 1440, label: "1440p" },
+              { value: 2160, label: "4K" },
+            ] as const
+          ).filter((o) => o.value === 0 || !info || Math.min(info.width, info.height) < o.value)}
         />
+      </Field>
+      {value.upscale === 2160 && (
+        <p className="text-xs text-muted-foreground">4K no celular é bem lento e pode faltar memória em vídeos longos.</p>
       )}
     </>
   ),

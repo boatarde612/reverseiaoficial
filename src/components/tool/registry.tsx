@@ -136,7 +136,7 @@ const quality: ToolDefinition<QualitySettings> = {
   pipeline: qualityPipeline,
   needsFrame: () => false,
   ready: (s, info) =>
-    !s.denoise.startsWith("l") && !s.denoise.startsWith("s") && s.sharpen === "off" && (!s.upscale || Math.min(info.width, info.height) >= s.upscale)
+    s.denoise === "off" && s.sharpen === "off" && (!s.upscale || Math.min(info.width, info.height) >= s.upscale)
       ? "Escolha pelo menos um ajuste."
       : null,
   Settings: ({ value, onChange, info }) => (

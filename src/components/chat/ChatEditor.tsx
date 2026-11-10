@@ -22,7 +22,7 @@ interface Msg {
   id: string;
   role: "user" | "assistant";
   text: string;
-  plan?: PlanStep[];
+  plan?: PlanStep[] | undefined;
   attachment?: string | undefined;
   /** Session-only fields (not saved). */
   jobId?: string;

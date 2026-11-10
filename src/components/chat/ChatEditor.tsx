@@ -103,7 +103,10 @@ export function ChatEditor() {
     localStorage.setItem(STORAGE, JSON.stringify(keep));
   }, [msgs, loaded]);
 
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), [msgs, busy, jobs]);
+  // Braces matter: newer Chrome returns a Promise from scrollIntoView, and React would call it as cleanup.
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [msgs, busy, jobs]);
 
   // Turn finished jobs into result messages.
   useEffect(() => {

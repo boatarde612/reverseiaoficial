@@ -9,7 +9,7 @@ export const Route = createFileRoute("/ferramentas/")({
       { title: "Ferramentas — REVERSE IA" },
       { name: "description", content: "Reverse, RSMB, FPS MOD, Melhorar Qualidade, Tracking, Zoom e Time Remap: escolha uma ferramenta e edite seu vídeo." },
       { property: "og:title", content: "Ferramentas — REVERSE IA" },
-      { property: "og:description", content: "Sete ferramentas independentes de edição automática de vídeos." },
+      { property: "og:description", content: "Oito ferramentas independentes de edição automática de vídeos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

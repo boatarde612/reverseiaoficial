@@ -2,12 +2,17 @@ import type { ReactNode } from "react";
 
 import type { ToolId } from "@/lib/tools";
 import {
+  ccDarkCss,
+  ccDarkPipeline,
+  CC_DARK_PRESET,
   fpsPipeline,
   qualityPipeline,
   reversePipeline,
   rsmbPipeline,
   timeRemapPipeline,
+  type CcDarkSettings,
   type FpsSettings,
+  type Level,
   type QualitySettings,
   type ReverseSettings,
   type RsmbSettings,
@@ -86,7 +91,7 @@ const rsmb: ToolDefinition<RsmbSettings> = {
 };
 
 const fps: ToolDefinition<FpsSettings> = {
-  defaults: { targetFps: 60, intensity: 30, fast: true },
+  defaults: { targetFps: 60, quality: "precise", fast: true },
   pipeline: fpsPipeline,
   needsFrame: () => false,
   ready: (s, info) =>
@@ -105,20 +110,37 @@ const fps: ToolDefinition<FpsSettings> = {
           ]}
         />
       </Field>
-      <IntensityPicker value={value.intensity} onChange={(intensity) => onChange({ ...value, intensity })} />
+      <Field label="Interpolação">
+        <Chips
+          value={value.quality}
+          onChange={(quality) => onChange({ ...value, quality })}
+          options={[
+            { value: "fast", label: "Rápida", sub: "Processa mais rápido" },
+            { value: "precise", label: "Precisa", sub: "Menos artefatos, mais lenta" },
+          ]}
+        />
+      </Field>
       <FastSwitch checked={value.fast} onChange={(fast) => onChange({ ...value, fast })} />
     </>
   ),
 };
 
+const LEVELS: { value: Level; label: string }[] = [
+  { value: "off", label: "Desligada" },
+  { value: "light", label: "Leve" },
+  { value: "strong", label: "Forte" },
+];
+
 const quality: ToolDefinition<QualitySettings> = {
-  defaults: { intensity: 20, upscale: 0 },
+  defaults: { upscale: 0, denoise: "light", sharpen: "light" },
   pipeline: qualityPipeline,
   needsFrame: () => false,
-  ready: () => null,
+  ready: (s, info) =>
+    s.denoise === "off" && s.sharpen === "off" && (!s.upscale || Math.min(info.width, info.height) >= s.upscale)
+      ? "Escolha pelo menos um ajuste."
+      : null,
   Settings: ({ value, onChange, info }) => (
     <>
-      <IntensityPicker value={value.intensity} onChange={(intensity) => onChange({ ...value, intensity })} />
       <Field label="Resolução de saída" hint="Ampliação com filtro Lanczos">
         <Chips
           columns={4}
@@ -134,11 +156,54 @@ const quality: ToolDefinition<QualitySettings> = {
           ).filter((o) => o.value === 0 || !info || Math.min(info.width, info.height) < o.value)}
         />
       </Field>
+      <Field label="Redução de ruído">
+        <Chips columns={3} value={value.denoise} onChange={(denoise) => onChange({ ...value, denoise })} options={LEVELS} />
+      </Field>
+      <Field label="Nitidez">
+        <Chips columns={3} value={value.sharpen} onChange={(sharpen) => onChange({ ...value, sharpen })} options={LEVELS} />
+      </Field>
       {value.upscale === 2160 && (
         <p className="text-xs text-muted-foreground">4K no celular é bem lento e pode faltar memória em vídeos longos.</p>
       )}
     </>
   ),
+};
+
+const signed = (v: number) => `${v > 0 ? "+" : ""}${Math.round(v * 100)}`;
+const times = (v: number) => `${v.toFixed(2)}x`;
+
+const ccDark: ToolDefinition<CcDarkSettings> = {
+  defaults: { ...CC_DARK_PRESET },
+  pipeline: ccDarkPipeline,
+  needsFrame: () => true,
+  ready: () => null,
+  Settings: ({ value, onChange, frameUrl }) => {
+    const set = (p: Partial<CcDarkSettings>) => onChange({ ...value, ...p });
+    return (
+      <>
+        <Field label="Prévia" hint="Aproximada — o resultado final é processado de verdade">
+          {frameUrl ? (
+            <img src={frameUrl} alt="Prévia da cor" className="w-full rounded-xl border border-border" style={{ filter: ccDarkCss(value) }} />
+          ) : (
+            <div className="grid aspect-video place-items-center rounded-xl border border-border text-xs text-muted-foreground">Carregando quadro…</div>
+          )}
+        </Field>
+        <button
+          type="button"
+          onClick={() => onChange({ ...CC_DARK_PRESET })}
+          className="w-full rounded-xl border border-primary/50 bg-accent px-3 py-2.5 text-sm font-semibold text-accent-foreground"
+        >
+          Restaurar preset CC Dark
+        </button>
+        <SliderField label="Exposição" value={value.exposure} min={-1} max={1} step={0.05} format={signed} onChange={(exposure) => set({ exposure })} />
+        <SliderField label="Contraste" value={value.contrast} min={0.5} max={1.5} step={0.01} format={times} onChange={(contrast) => set({ contrast })} />
+        <SliderField label="Saturação" value={value.saturation} min={0} max={1.5} step={0.01} format={times} onChange={(saturation) => set({ saturation })} />
+        <SliderField label="Sombras" value={value.shadows} min={-1} max={1} step={0.05} format={signed} onChange={(shadows) => set({ shadows })} />
+        <SliderField label="Realces" value={value.highlights} min={-1} max={1} step={0.05} format={signed} onChange={(highlights) => set({ highlights })} />
+        <SliderField label="Temperatura" value={value.temperature} min={-1} max={1} step={0.05} format={(v) => `${signed(v)} ${v < 0 ? "frio" : v > 0 ? "quente" : ""}`} onChange={(temperature) => set({ temperature })} />
+      </>
+    );
+  },
 };
 
 const tracking: ToolDefinition<TrackingSettings> = {
@@ -348,4 +413,5 @@ export const TOOL_DEFS: Record<ToolId, ToolDefinition<any>> = {
   tracking,
   zoom,
   "time-remap": remap,
+  "cc-dark": ccDark,
 };

@@ -1,6 +1,6 @@
 // Tool catalogue: metadata only (safe for SSR). Processing lives in src/lib/video/pipelines.
 
-export type ToolId = "reverse" | "rsmb" | "fps-mod" | "qualidade" | "tracking" | "zoom" | "time-remap";
+export type ToolId = "reverse" | "rsmb" | "fps-mod" | "qualidade" | "tracking" | "zoom" | "time-remap" | "cc-dark";
 
 export interface ToolMeta {
   id: ToolId;
@@ -66,6 +66,14 @@ export const TOOLS: ToolMeta[] = [
     name: "TIME REMAP",
     tagline: "Slow, fast e speed ramp",
     description: "Controle a velocidade com transições graduais entre trechos.",
+    maxSeconds: 60,
+    heavy: false,
+  },
+  {
+    id: "cc-dark",
+    name: "CC DARK",
+    tagline: "Cor escura e cinematográfica",
+    description: "Correção de cor escura com sombras frias, preservando os detalhes da imagem.",
     maxSeconds: 60,
     heavy: false,
   },

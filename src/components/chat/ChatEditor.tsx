@@ -64,7 +64,13 @@ function describe(step: PlanStep): string {
   const parts: string[] = [];
   if (s.intensity) parts.push(`intensidade ${s.intensity}`);
   if (step.tool === "fps-mod") parts.push(`${s.targetFps} FPS`);
-  if (step.tool === "qualidade" && s.upscale) parts.push(s.upscale === 2160 ? "4K" : `${s.upscale}p`);
+  if (step.tool === "fps-mod") parts.push(s.quality === "fast" ? "interpolação rápida" : "interpolação precisa");
+  if (step.tool === "qualidade") {
+    const lv = { off: "desligado", light: "leve", strong: "forte" } as Record<string, string>;
+    if (s.upscale) parts.push(s.upscale === 2160 ? "4K" : `${s.upscale}p`);
+    parts.push(`ruído ${lv[s.denoise]}`, `nitidez ${lv[s.sharpen]}`);
+  }
+  if (step.tool === "cc-dark") parts.push(`contraste ${s.contrast.toFixed(2)} · saturação ${s.saturation.toFixed(2)} · temperatura ${s.temperature > 0 ? "+" : ""}${s.temperature.toFixed(2)}`);
   if (step.tool === "zoom") parts.push(String({ in: "Zoom In", out: "Zoom Out", smooth: "suave", dynamic: "dinâmico", approach: "aproximação", retreat: "afastamento", track: "com tracking" }[s.mode as string]));
   if (step.tool === "time-remap") parts.push(`${s.mode}${s.mode === "slow" || s.mode === "fast" ? ` ${s.speed}x` : ""}`);
   if (step.tool === "tracking") parts.push(s.mode === "frame" ? `enquadramento ${s.aspect}` : "marcar objeto");

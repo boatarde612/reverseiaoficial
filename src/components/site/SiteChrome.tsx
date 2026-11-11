@@ -8,7 +8,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link to="/" aria-label="REVERSE IA — início">
+        <Link to="/" aria-label="REVERSE IA BETA — início">
           <Logo />
         </Link>
         <nav className="flex items-center gap-1">
@@ -55,7 +55,7 @@ export function SiteFooter() {
             </Link>
           ))}
         </nav>
-        <p className="mt-8 text-xs text-muted-foreground/70">© REVERSE IA. Seus vídeos são processados no seu próprio aparelho.</p>
+        <p className="mt-8 text-xs text-muted-foreground/70">© REVERSE IA BETA. Seus vídeos são processados no seu próprio aparelho.</p>
       </div>
     </footer>
   );

@@ -11,8 +11,8 @@ export const Route = createFileRoute("/ferramentas/$ferramenta")({
   },
   head: ({ loaderData }) => {
     const tool = loaderData?.tool;
-    if (!tool) return { meta: [{ title: "Ferramenta não encontrada — REVERSE IA" }, { name: "robots", content: "noindex" }] };
-    const title = `${tool.name} — REVERSE IA`;
+    if (!tool) return { meta: [{ title: "Ferramenta não encontrada — REVERSE IA BETA" }, { name: "robots", content: "noindex" }] };
+    const title = `${tool.name} — REVERSE IA BETA`;
     return {
       meta: [
         { title },

@@ -6,9 +6,9 @@ import { PageShell } from "@/components/site/SiteChrome";
 export const Route = createFileRoute("/criador")({
   head: () => ({
     meta: [
-      { title: "Criador do REVERSE IA — @tankaiofc" },
+      { title: "Criador do REVERSE IA BETA — @tankaiofc" },
       { name: "description", content: "Conheça o criador do REVERSE IA no TikTok: @tankaiofc." },
-      { property: "og:title", content: "Criador do REVERSE IA — @tankaiofc" },
+      { property: "og:title", content: "Criador do REVERSE IA BETA — @tankaiofc" },
       { property: "og:description", content: "Siga @tankaiofc no TikTok." },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary_large_image" },

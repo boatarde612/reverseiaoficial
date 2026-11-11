@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "REVERSE IA — Sua edição. Sem complicação." },
+      { title: "REVERSE IA BETA — Sua edição. Sem complicação." },
       { name: "description", content: "Ferramentas inteligentes para transformar seus vídeos: Reverse, RSMB, FPS MOD, qualidade, CC Dark, tracking, zoom e time remap direto no navegador." },
-      { property: "og:title", content: "REVERSE IA — Sua edição. Sem complicação." },
+      { property: "og:title", content: "REVERSE IA BETA — Sua edição. Sem complicação." },
       { property: "og:description", content: "Ferramentas inteligentes para transformar seus vídeos de futebol, animes e AMVs." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

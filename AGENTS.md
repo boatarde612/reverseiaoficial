@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Hosting
+
+- `netlify.toml` builds a second copy of the site for Netlify (`NITRO_PRESET=netlify`, publish `dist/`, server as a Netlify Function); Lovable hosting ignores it, so keep both builds working. Why: the owner is testing Netlify as an extra host without replacing the Lovable site.
+- Use `assetUrl()` from `src/lib/asset-url.ts` for every `*.asset.json` URL. Why: those paths are only served by Lovable hosting; Netlify builds prefix them with `VITE_ASSET_ORIGIN`.

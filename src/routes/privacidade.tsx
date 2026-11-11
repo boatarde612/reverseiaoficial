@@ -7,9 +7,9 @@ import { CREATOR } from "@/lib/tools";
 export const Route = createFileRoute("/privacidade")({
   head: () => ({
     meta: [
-      { title: "Política de Privacidade — REVERSE IA" },
+      { title: "Política de Privacidade — REVERSE IA BETA" },
       { name: "description", content: "Como o REVERSE IA trata seus vídeos: processamento no próprio aparelho, sem envio a servidores." },
-      { property: "og:title", content: "Política de Privacidade — REVERSE IA" },
+      { property: "og:title", content: "Política de Privacidade — REVERSE IA BETA" },
       { property: "og:description", content: "Seus vídeos são processados no seu aparelho e não são enviados a servidores." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary_large_image" },

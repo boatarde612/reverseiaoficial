@@ -9,12 +9,13 @@ import holyThumb from "@/assets/media/holy-thumb.jpg.asset.json";
 import holyVideo from "@/assets/media/holy.mp4.asset.json";
 import kaiserThumb from "@/assets/media/kaiser-thumb.jpg.asset.json";
 import kaiserVideo from "@/assets/media/kaiser.mp4.asset.json";
+import { assetUrl } from "@/lib/asset-url";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const EDITS = [
-  { title: "Dexter", tag: "Reverse + Zoom", video: dexterVideo.url, thumb: dexterThumb.url },
-  { title: "Holy Phonk", tag: "Filler remake", video: holyVideo.url, thumb: holyThumb.url },
-  { title: "Michael Kaiser", tag: "Shake · Headbop", video: kaiserVideo.url, thumb: kaiserThumb.url },
+  { title: "Dexter", tag: "Reverse + Zoom", video: assetUrl(dexterVideo.url), thumb: assetUrl(dexterThumb.url) },
+  { title: "Holy Phonk", tag: "Filler remake", video: assetUrl(holyVideo.url), thumb: assetUrl(holyThumb.url) },
+  { title: "Michael Kaiser", tag: "Shake · Headbop", video: assetUrl(kaiserVideo.url), thumb: assetUrl(kaiserThumb.url) },
 ];
 
 export function EditsShowcase() {
@@ -113,9 +114,9 @@ export function QualityCompare() {
   return (
     <div>
       <div className="surface-card relative mx-auto aspect-square max-w-xl overflow-hidden p-0 select-none">
-        <video ref={before} src={basicVideo.url} muted loop autoPlay playsInline className="absolute inset-0 h-full w-full object-cover" />
+        <video ref={before} src={assetUrl(basicVideo.url)} muted loop autoPlay playsInline className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${pos}%)` }}>
-          <video ref={after} src={enhancedVideo.url} muted loop playsInline className="h-full w-full object-cover" />
+          <video ref={after} src={assetUrl(enhancedVideo.url)} muted loop playsInline className="h-full w-full object-cover" />
         </div>
         <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-primary glow-ring" style={{ left: `${pos}%` }} />
         <span className="absolute left-2 top-2 rounded-md bg-background/80 px-2 py-1 text-[10px] font-semibold leading-tight">

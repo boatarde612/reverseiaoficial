@@ -6,9 +6,9 @@ import { PageShell } from "@/components/site/SiteChrome";
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "Perguntas frequentes — REVERSE IA" },
+      { title: "Perguntas frequentes — REVERSE IA BETA" },
       { name: "description", content: "Duração recomendada para Reverse, limites, download e privacidade no REVERSE IA." },
-      { property: "og:title", content: "Perguntas frequentes — REVERSE IA" },
+      { property: "og:title", content: "Perguntas frequentes — REVERSE IA BETA" },
       { property: "og:description", content: "Tire suas dúvidas sobre as ferramentas do REVERSE IA." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

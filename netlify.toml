@@ -1,0 +1,12 @@
+# Netlify hosting for REVERSE IA BETA (Lovable hosting ignores this file).
+# The build emits static files to dist/ and the server (pages + Chat IA) as a
+# Netlify Function in .netlify/functions-internal/, which Netlify picks up automatically.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NITRO_PRESET = "netlify"
+  # Showcase videos/images are stored on the Lovable site; load them from there.
+  VITE_ASSET_ORIGIN = "https://reverseiaoficial.lovable.app"

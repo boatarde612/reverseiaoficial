@@ -79,7 +79,7 @@ export const chatTurn = createServerFn({ method: "POST" })
         const r = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${geminiKey}` },
-          body: JSON.stringify({ model: "gemini-2.5-flash", response_format: { type: "json_object" }, messages }),
+          body: JSON.stringify({ model: "gemini-3.8-flash", response_format: { type: "json_object" }, messages }),
         });
         if (!r.ok) {
           console.error("gemini failed", r.status, (await r.text()).slice(0, 500));

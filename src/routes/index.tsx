@@ -3,7 +3,7 @@ import { ArrowRight, ShieldCheck } from "lucide-react";
 
 import cover from "@/assets/reverse-ia-cover.webp";
 import { CreatorCard, FaqList, HowItWorks, SectionTitle, ToolsGrid } from "@/components/site/Sections";
-import { EditsShowcase, QualityCompare } from "@/components/site/Showcase";
+import { QualityCompare } from "@/components/site/Showcase";
 import { PageShell } from "@/components/site/SiteChrome";
 import { Button } from "@/components/ui/button";
 
@@ -54,11 +54,6 @@ function Index() {
             <ShieldCheck className="size-4 text-primary-glow" /> Processado no seu aparelho — seu vídeo não sai dele.
           </p>
         </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 pt-14">
-        <SectionTitle eyebrow="Edits em destaque" title="Feito para edits" sub="Toque para assistir em tela grande." />
-        <EditsShowcase />
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-14">

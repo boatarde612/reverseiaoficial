@@ -33,3 +33,7 @@ use the editor.
 
 - `netlify.toml` builds a second copy of the site for Netlify (`NITRO_PRESET=netlify`, publish `dist/`, server as a Netlify Function); Lovable hosting ignores it, so keep both builds working. Why: the owner is testing Netlify as an extra host without replacing the Lovable site.
 - Use `assetUrl()` from `src/lib/asset-url.ts` for every `*.asset.json` URL. Why: those paths are only served by Lovable hosting; Netlify builds prefix them with `VITE_ASSET_ORIGIN`.
+
+## AI
+
+- The Chat IA server function calls Google Gemini's free OpenAI-compatible API when the `GEMINI_API_KEY` secret is set, and falls back to the Lovable AI Gateway otherwise. Why: the owner chose a free AI after the workspace AI credits ran out, and the same key works on Netlify.

@@ -5,7 +5,7 @@
 - [x] Nome REVERSE IA BETA nos títulos e no logo
 - [ ] Conectar GitHub (aguarda o usuário: Project Settings → Git)
 - [ ] Importar repositório na Netlify e implantação de teste (aguarda o usuário)
-- [ ] Decidir como o Chat IA usa a IA no site da Netlify (aguarda decisão do usuário)
+- [ ] Chat IA com IA gratuita (Gemini): aguarda a chave GEMINI_API_KEY; na Netlify, colocar a mesma chave nas variáveis do site
 - [ ] Validar o site de teste da Netlify depois do primeiro deploy
 
 ## Depois da Netlify (pendente da atualização anterior)

@@ -69,14 +69,37 @@ export const chatTurn = createServerFn({ method: "POST" })
         ]
       : lastText;
 
+    const messages = [{ role: "system" as const, content: SYSTEM }, ...history, { role: "user" as const, content: userContent }];
+
     try {
-      const res = await generateChatCompletion({
-        model: "openai/gpt-6-astra",
-        response_format: { type: "json_object" },
-        messages: [{ role: "system", content: SYSTEM }, ...history, { role: "user", content: userContent }],
-      });
-      const content = res.choices[0]?.message?.content;
-      const text = typeof content === "string" ? content : "";
+      // Free Google Gemini key (AI Studio) when configured; otherwise Lovable's gateway.
+      const geminiKey = process.env["GEMINI_API_KEY"];
+      let text = "";
+      if (geminiKey) {
+        const r = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${geminiKey}` },
+          body: JSON.stringify({ model: "gemini-2.5-flash", response_format: { type: "json_object" }, messages }),
+        });
+        if (!r.ok) {
+          console.error("gemini failed", r.status, (await r.text()).slice(0, 500));
+          if (r.status === 429) return { reply: "", plan: null, error: "A IA gratuita atingiu o limite por minuto. Espere um pouco e tente de novo." };
+          if (r.status === 400 || r.status === 401 || r.status === 403) return { reply: "", plan: null, error: "A chave da IA gratuita não foi aceita." };
+          return { reply: "", plan: null, error: "A IA não respondeu. Tente de novo." };
+        }
+        const j = (await r.json()) as { choices?: { message?: { content?: unknown } }[] };
+        const c = j.choices?.[0]?.message?.content;
+        text = typeof c === "string" ? c : "";
+      } else {
+        const res = await generateChatCompletion({
+          model: "openai/gpt-6-astra",
+          response_format: { type: "json_object" },
+          messages,
+        });
+        const content = res.choices[0]?.message?.content;
+        text = typeof content === "string" ? content : "";
+      }
+      text = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim();
       const parsed = JSON.parse(text) as { reply?: unknown; plan?: unknown };
       const reply = typeof parsed.reply === "string" ? parsed.reply : "Não entendi. Pode repetir?";
       let plan: PlanStep[] | null = null;

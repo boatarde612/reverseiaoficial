@@ -40,6 +40,8 @@ Responda SOMENTE com JSON: {"reply": string, "plan": null | [{"tool": id, "setti
 - Se não houver vídeo e o usuário pedir efeitos, devolva o plano mesmo assim e peça para anexar o vídeo.
 - Nunca diga que já processou: o processamento só acontece quando o usuário confirmar.`;
 
+const GEMINI_MODELS = ["gemini-3.5-flash", "gemini-3.8-flash", "gemini-3.1-flash-lite"];
+
 export interface ChatTurnResult {
   reply: string;
   plan: PlanStep[] | null;
@@ -76,20 +78,35 @@ export const chatTurn = createServerFn({ method: "POST" })
       const geminiKey = process.env["GEMINI_API_KEY"];
       let text = "";
       if (geminiKey) {
-        const r = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${geminiKey}` },
-          body: JSON.stringify({ model: "gemini-2.5-flash", response_format: { type: "json_object" }, messages }),
-        });
-        if (!r.ok) {
-          console.error("gemini failed", r.status, (await r.text()).slice(0, 500));
-          if (r.status === 429) return { reply: "", plan: null, error: "A IA gratuita atingiu o limite por minuto. Espere um pouco e tente de novo." };
-          if (r.status === 400 || r.status === 401 || r.status === 403) return { reply: "", plan: null, error: "A chave da IA gratuita não foi aceita." };
-          return { reply: "", plan: null, error: "A IA não respondeu. Tente de novo." };
+        // Free tier models get overloaded at times (503): try the next one.
+        let status = 0;
+        for (const model of GEMINI_MODELS) {
+          try {
+            const r = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${geminiKey}` },
+              body: JSON.stringify({ model, response_format: { type: "json_object" }, messages }),
+              signal: AbortSignal.timeout(30_000),
+            });
+            status = r.status;
+            if (!r.ok) {
+              console.error("gemini failed", model, r.status, (await r.text()).slice(0, 300));
+              if (r.status === 400 || r.status === 401 || r.status === 403) break;
+              continue;
+            }
+            const j = (await r.json()) as { choices?: { message?: { content?: unknown } }[] };
+            const c = j.choices?.[0]?.message?.content;
+            text = typeof c === "string" ? c : "";
+            if (text) break;
+          } catch (err) {
+            console.error("gemini timeout/network", model, err);
+          }
         }
-        const j = (await r.json()) as { choices?: { message?: { content?: unknown } }[] };
-        const c = j.choices?.[0]?.message?.content;
-        text = typeof c === "string" ? c : "";
+        if (!text) {
+          if (status === 429) return { reply: "", plan: null, error: "A IA gratuita atingiu o limite por minuto. Espere um pouco e tente de novo." };
+          if (status === 400 || status === 401 || status === 403) return { reply: "", plan: null, error: "A chave da IA gratuita não foi aceita." };
+          return { reply: "", plan: null, error: "A IA gratuita está ocupada agora. Tente de novo em instantes." };
+        }
       } else {
         const res = await generateChatCompletion({
           model: "openai/gpt-6-astra",

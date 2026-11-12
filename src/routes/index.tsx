@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 
-import hero from "@/assets/hero-motion.jpg";
+import cover from "@/assets/reverse-ia-cover.webp";
 import { CreatorCard, FaqList, HowItWorks, SectionTitle, ToolsGrid } from "@/components/site/Sections";
 import { EditsShowcase, QualityCompare } from "@/components/site/Showcase";
 import { PageShell } from "@/components/site/SiteChrome";
@@ -25,19 +25,18 @@ function Index() {
   return (
     <PageShell>
       <section className="relative overflow-hidden">
-        <img
-          src={hero}
-          alt=""
-          width={1280}
-          height={1600}
-          className="absolute inset-0 h-full w-full object-cover object-[70%_center] opacity-70"
-        />
+        <img src={cover} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-30 blur-2xl" />
         <div className="absolute inset-0 bg-hero-fade" />
-        <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-end px-4 pb-12 pt-32 sm:min-h-[80vh]">
-          <p className="eyebrow animate-fade-up">Edição automática de vídeos</p>
-          <h1 className="mt-3 text-4xl font-bold leading-[1.05] animate-fade-up sm:text-6xl">
-            REVERSE <span className="text-gradient">IA</span>
-          </h1>
+        <div className="relative mx-auto flex max-w-6xl flex-col px-4 pb-12 pt-6 sm:pt-10">
+          <h1 className="sr-only">REVERSE IA BETA</h1>
+          <img
+            src={cover}
+            alt="REVERSE IA BETA"
+            width={1536}
+            height={1024}
+            className="mx-auto w-full max-w-3xl rounded-3xl border border-primary/30 glow-ring animate-fade-up"
+          />
+          <p className="eyebrow mt-6 animate-fade-up">Edição automática de vídeos</p>
           <p className="mt-3 font-display text-lg font-medium text-foreground/90 animate-fade-up sm:text-2xl">
             Sua edição. Sem complicação.
           </p>

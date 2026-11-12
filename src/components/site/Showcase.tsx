@@ -1,10 +1,9 @@
 import { Play, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import basicVideo from "@/assets/media/basic-display.mp4.asset.json";
 import dexterThumb from "@/assets/media/dexter-thumb.jpg.asset.json";
 import dexterVideo from "@/assets/media/dexter.mp4.asset.json";
-import enhancedVideo from "@/assets/media/enhanced.mp4.asset.json";
+import holyEnhanced from "@/assets/media/holy-enhanced.mp4.asset.json";
 import holyThumb from "@/assets/media/holy-thumb.jpg.asset.json";
 import holyVideo from "@/assets/media/holy.mp4.asset.json";
 import kaiserThumb from "@/assets/media/kaiser-thumb.jpg.asset.json";
@@ -84,7 +83,7 @@ function PreviewCard({ edit, onOpen }: { edit: (typeof EDITS)[number]; onOpen: (
   );
 }
 
-/** Before/after slider with two synced videos. The right side is a real Melhorar Qualidade output. */
+/** Before/after slider with two synced videos: left is the untouched original, right is a real Melhorar Qualidade output at the same resolution. */
 export function QualityCompare() {
   const before = useRef<HTMLVideoElement>(null);
   const after = useRef<HTMLVideoElement>(null);
@@ -114,20 +113,20 @@ export function QualityCompare() {
   return (
     <div>
       <div className="surface-card relative mx-auto aspect-square max-w-xl overflow-hidden p-0 select-none">
-        <video ref={before} src={assetUrl(basicVideo.url)} muted loop autoPlay playsInline className="absolute inset-0 h-full w-full object-cover" />
+        <video ref={before} src={assetUrl(holyVideo.url)} poster={assetUrl(holyThumb.url)} muted loop autoPlay playsInline className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${pos}%)` }}>
-          <video ref={after} src={assetUrl(enhancedVideo.url)} muted loop playsInline className="h-full w-full object-cover" />
+          <video ref={after} src={assetUrl(holyEnhanced.url)} muted loop playsInline className="h-full w-full object-cover" />
         </div>
         <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-primary glow-ring" style={{ left: `${pos}%` }} />
         <span className="absolute left-2 top-2 rounded-md bg-background/80 px-2 py-1 text-[10px] font-semibold leading-tight">
-          ORIGINAL
+          ANTES
           <br />
-          <span className="text-muted-foreground">QUALIDADE BÁSICA</span>
+          <span className="text-muted-foreground">VÍDEO ORIGINAL</span>
         </span>
         <span className="absolute right-2 top-2 rounded-md bg-background/80 px-2 py-1 text-right text-[10px] font-semibold leading-tight">
-          REVERSE IA
+          DEPOIS
           <br />
-          <span className="text-primary-glow">QUALIDADE MELHORADA</span>
+          <span className="text-primary-glow">REVERSE IA</span>
         </span>
         <input
           type="range"
@@ -140,8 +139,8 @@ export function QualityCompare() {
         />
       </div>
       <p className="mx-auto mt-3 max-w-xl text-center text-xs text-muted-foreground">
-        Arraste para comparar. Mesmo trecho: à esquerda comprimido em 360p, à direita processado pelo Melhorar Qualidade
-        (1080p, ruído leve, nitidez forte). O resultado varia de acordo com o vídeo original.
+        Arraste para comparar. Mesmo vídeo e mesma resolução: à esquerda o original sem nenhuma alteração, à direita
+        processado pelo Melhorar Qualidade (ruído leve, nitidez forte). O resultado varia de acordo com o vídeo original.
       </p>
     </div>
   );

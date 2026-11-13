@@ -175,6 +175,8 @@ export interface CcDarkSettings {
   shadows: number;
   highlights: number;
   temperature: number;
+  /** -1 green .. +1 magenta. */
+  tint: number;
 }
 
 export const CC_DARK_PRESET: CcDarkSettings = {
@@ -184,7 +186,16 @@ export const CC_DARK_PRESET: CcDarkSettings = {
   shadows: -0.3,
   highlights: -0.2,
   temperature: -0.35,
+  tint: 0,
 };
+
+export const CC_PRESETS: { id: string; label: string; value: CcDarkSettings }[] = [
+  { id: "dark", label: "CC Dark", value: CC_DARK_PRESET },
+  { id: "natural", label: "Natural", value: { exposure: 0, contrast: 1.05, saturation: 1.05, shadows: 0.1, highlights: -0.1, temperature: 0, tint: 0 } },
+  { id: "warm", label: "Quente", value: { exposure: 0.05, contrast: 1.08, saturation: 1.1, shadows: 0, highlights: -0.1, temperature: 0.45, tint: 0.05 } },
+  { id: "cold", label: "Frio", value: { exposure: 0, contrast: 1.1, saturation: 0.9, shadows: -0.1, highlights: 0, temperature: -0.5, tint: -0.05 } },
+  { id: "vivid", label: "Vibrante", value: { exposure: 0.05, contrast: 1.2, saturation: 1.35, shadows: -0.05, highlights: -0.15, temperature: 0.1, tint: 0 } },
+];
 
 const r3 = (v: number) => Math.round(v * 1000) / 1000;
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -194,18 +205,19 @@ export function ccDarkFilters(s: CcDarkSettings): string[] {
   const sh = r3(clamp(0.25 + 0.1 * s.shadows, 0.1, 0.4));
   const hl = r3(clamp(0.75 + 0.1 * s.highlights, 0.6, 0.9));
   const t = clamp(s.temperature, -1, 1);
+  const g = -clamp(s.tint ?? 0, -1, 1) * 0.08;
   return [
     `eq=brightness=${r3(clamp(s.exposure, -1, 1) * 0.2)}:contrast=${r3(clamp(s.contrast, 0.5, 1.5))}:saturation=${r3(clamp(s.saturation, 0, 1.5))}`,
     `curves=all='0/0.03 0.25/${sh} 0.75/${hl} 1/0.97'`,
     // Temperature, plus a cool tint in the shadows for the cinematic look.
-    `colorbalance=rs=${r3(t * 0.08)}:bs=${r3(-t * 0.08 + 0.04)}:rm=${r3(t * 0.06)}:bm=${r3(-t * 0.06)}:rh=${r3(t * 0.04)}:bh=${r3(-t * 0.04)}`,
+    `colorbalance=rs=${r3(t * 0.08)}:bs=${r3(-t * 0.08 + 0.04)}:rm=${r3(t * 0.06)}:bm=${r3(-t * 0.06)}:rh=${r3(t * 0.04)}:bh=${r3(-t * 0.04)}:gs=${r3(g)}:gm=${r3(g)}:gh=${r3(g * 0.5)}`,
   ];
 }
 
 /** Approximate on-screen preview of the grade (CSS filter). */
 export function ccDarkCss(s: CcDarkSettings): string {
   const b = 1 + s.exposure * 0.2 + (s.shadows + s.highlights) * 0.05;
-  return `brightness(${r3(b)}) contrast(${r3(s.contrast)}) saturate(${r3(s.saturation)}) hue-rotate(${r3(-s.temperature * 8)}deg)`;
+  return `brightness(${r3(b)}) contrast(${r3(s.contrast)}) saturate(${r3(s.saturation)}) hue-rotate(${r3(-s.temperature * 8 + (s.tint ?? 0) * 10)}deg)`;
 }
 
 export const ccDarkPipeline: Pipeline<CcDarkSettings> = async (ctx, s) => {
@@ -255,6 +267,105 @@ export const timeRemapPipeline: Pipeline<TimeRemapSettings> = async (ctx, s) => 
   await ctx.run(
     ["-i", ctx.input, "-map", "0:v:0", "-vf", filters.join(","), ...VIDEO_ENCODE, ...audio, "-t", outDur.toFixed(3), out],
     { label: "Remapeando o tempo", from: 0, to: 1, seconds: outDur },
+  );
+  return out;
+};
+
+/* ----------------------------- SMOOTH REVERSE --------------------------- */
+
+export interface SmoothReverseSettings {
+  /** Speed at the turn point (lower = smoother, longer turn). */
+  turnSpeed: 0.25 | 0.4 | 0.6;
+  /** Seconds of slow-down before and speed-up after the turn. */
+  transition: number;
+  fast: boolean;
+}
+
+/** Speed curve over the forward+reverse clip: 1x, eases to turnSpeed at the junction, back to 1x. */
+export function smoothReverseCurve(s: SmoothReverseSettings, clipDuration: number, total: number): [number, number][] {
+  const tr = Math.min(Math.max(0.1, s.transition), clipDuration * 0.9);
+  const at = clipDuration;
+  return [
+    [0, 1],
+    [Math.max(0.001, at - tr), 1],
+    [at, s.turnSpeed],
+    [Math.min(total - 0.001, at + tr), 1],
+    [total, 1],
+  ];
+}
+
+export const smoothReversePipeline: Pipeline<SmoothReverseSettings> = async (ctx, s) => {
+  const fps = Math.min(60, fpsOf(ctx.info));
+  const D = ctx.info.duration;
+  const frame = 1 / fps;
+  const total = D + Math.max(0, D - frame);
+  const { filter } = scaleFor(ctx, s.fast);
+  const joined = ctx.tmp("mp4");
+  // Forward + reverse without repeating the junction frame.
+  const graph =
+    `[0:v]setpts=PTS-STARTPTS,${filter},fps=${fps},format=yuv420p,split=2[f][b];` +
+    `[b]reverse,trim=start_frame=1,setpts=PTS-STARTPTS[r];` +
+    `[f][r]concat=n=2:v=1:a=0,${EVEN}[v]`;
+  await ctx.run(
+    ["-i", ctx.input, "-filter_complex", graph, "-map", "[v]", ...VIDEO_ENCODE, "-an", "-t", total.toFixed(3), joined],
+    { label: "Montando ida e volta", from: 0, to: 0.35, seconds: total },
+  );
+  const curve = smoothReverseCurve(s, D, total);
+  const outDur = outputDuration(curve, total);
+  const map = timeMap(curve, total, 0.05);
+  const out = ctx.tmp("mp4");
+  const vf = [
+    `setpts='(${piecewiseExpr(map, "T")})/TB'`,
+    // Real in-between frames in the slowed turn instead of duplicated frames.
+    `minterpolate=fps=${fps}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1:scd=fdiff`,
+    EVEN,
+  ].join(",");
+  await ctx.run(
+    ["-i", joined, "-map", "0:v:0", "-vf", vf, ...VIDEO_ENCODE, "-an", "-t", outDur.toFixed(3), out],
+    { label: "Suavizando a virada", from: 0.35, to: 1, seconds: outDur },
+  );
+  return out;
+};
+
+/* -------------------------------- GELATINA ------------------------------ */
+
+export type JellyStyle = "wave" | "wobble" | "bounce";
+export interface GelatinaSettings {
+  style: JellyStyle;
+  intensity: Intensity;
+  /** Oscillations per second. */
+  speed: number;
+  range: "all" | "segment";
+  at: number;
+  until: number;
+  fast: boolean;
+}
+
+/** Pixel displacement expressions (dx, dy) for geq; W/H/X/Y are per-plane so chroma follows. */
+export function jellyExpr(s: GelatinaSettings): { dx: string; dy: string } {
+  const A = r3(s.intensity / 1000);
+  const f = r3(Math.max(0.2, Math.min(6, s.speed)));
+  const env = s.range === "segment" ? `*between(T,${r3(s.at)},${r3(Math.max(s.at, s.until))})` : "";
+  const ph = `2*PI*${f}*T`;
+  switch (s.style) {
+    case "wave":
+      return { dx: `${A}*W*sin(2*PI*3*Y/H-${ph})${env}`, dy: `${r3(A * 0.4)}*H*sin(2*PI*2*X/W-${ph})${env}` };
+    case "wobble":
+      return { dx: `${A * 2}*W*sin(${ph})*(Y/H-0.5)${env}`, dy: `${r3(A * 0.5)}*H*sin(PI*X/W)*sin(${ph}+1.2)${env}` };
+    case "bounce":
+      return { dx: `${A * 2}*W*sin(${ph})*(X/W-0.5)${env}`, dy: `${-A * 2}*H*sin(${ph})*(Y/H-0.5)${env}` };
+  }
+}
+
+export const gelatinaPipeline: Pipeline<GelatinaSettings> = async (ctx, s) => {
+  const { filter } = scaleFor(ctx, s.fast);
+  const { dx, dy } = jellyExpr(s);
+  const at = (p: string) => `${p}(X-(${dx}),Y-(${dy}))`;
+  const vf = ["setpts=PTS-STARTPTS", filter, "format=yuv420p", `geq=lum='${at("lum")}':cb='${at("cb")}':cr='${at("cr")}'`, EVEN].join(",");
+  const out = ctx.tmp("mp4");
+  await ctx.run(
+    ["-i", ctx.input, "-map", "0:v:0", "-vf", vf, ...VIDEO_ENCODE, ...audioMap(ctx), out],
+    { label: "Aplicando a deformação gelatina", from: 0, to: 1, seconds: ctx.info.duration },
   );
   return out;
 };

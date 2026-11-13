@@ -27,11 +27,13 @@ Ferramentas (id: configurações possíveis — use só estes valores):
 - "rsmb" (motion blur por estimativa de movimento): intensity 10|20|30|50, fast boolean.
 - "fps-mod" (interpolação de quadros): targetFps 60|90|120, quality "fast"|"precise", fast boolean. NÃO tem intensidade.
 - "qualidade" (melhorar qualidade): upscale 0|1080|1440|2160 (2160 = 4K; só amplia se for maior que o original), denoise "off"|"light"|"strong", sharpen "off"|"light"|"strong". NÃO tem intensidade.
-- "cc-dark" (correção de cor escura e cinematográfica): exposure -1..1, contrast 0.5..1.5, saturation 0..1.5, shadows -1..1, highlights -1..1, temperature -1..1 (negativo = mais frio). Padrão do preset: exposure -0.15, contrast 1.15, saturation 0.8, shadows -0.3, highlights -0.2, temperature -0.35. Envie só o que mudar.
-- "tracking": mode "frame"(câmera segue)|"object"(marca objeto), aspect "9:16"|"4:5"|"1:1"|"zoom", smoothness "low"|"mid"|"high". O usuário marca o objeto depois.
+- "cc-dark" (correção de cor escura e cinematográfica): exposure -1..1, contrast 0.5..1.5, saturation 0..1.5, shadows -1..1, highlights -1..1, temperature -1..1 (negativo = mais frio), tint -1..1. Padrão do preset: exposure -0.15, contrast 1.15, saturation 0.8, shadows -0.3, highlights -0.2, temperature -0.35. Envie só o que mudar.
+- "smooth-reverse" (vai e volta com virada suave, até 5 s): turnSpeed 0.25|0.4|0.6, transition 0.1..2 s, fast boolean.
+- "gelatina" (deformação elástica): style "wave"|"wobble"|"bounce", intensity 10|20|30|50, speed 0.2..6, range "all"|"segment", at (s), until (s), fast boolean.
+- "tracking" (rastreio de câmera): mode "frame"(câmera segue)|"object"(marca objeto), aspect "9:16"|"4:5"|"1:1"|"zoom", smoothness "low"|"mid"|"high". O usuário marca o objeto depois.
 - "zoom": mode "in"|"out"|"smooth"|"dynamic"|"approach"|"retreat"|"track", intensity 10|20|30|50, transition 0.1..5 s, period 0.2..2 s (punch do dinâmico).
 - "time-remap": mode "slow"|"fast"|"ramp"|"accel"|"decel"|"segment", speed 0.1..4, rampSlow 0.1..0.9, rampFast 1..4, at (s), until (s), transition 0.05..2 s, interpolate boolean.
-Só "rsmb" e "zoom" têm intensidade. Intensidades: 10 Leve, 20 Suave, 30 Médio, 50 Forte. "Motion Blur" = rsmb. "120 FPS" = fps-mod. "4K"/"melhorar" = qualidade. "CC Dark"/"cor escura"/"color correction" = cc-dark.
+Só "rsmb", "zoom" e "gelatina" têm intensidade. Intensidades: 10 Leve, 20 Suave, 30 Médio, 50 Forte. "Motion Blur" = rsmb. "120 FPS" = fps-mod. "4K"/"melhorar" = qualidade. "CC Dark"/"cor escura"/"color correction" = cc-dark.
 
 Responda SOMENTE com JSON: {"reply": string, "plan": null | [{"tool": id, "settings": {...apenas o que mudar}}]}.
 - Se o usuário pedir efeitos, devolva o plano completo (todas as ferramentas que devem ser aplicadas no vídeo original) e no reply liste os efeitos e pergunte se deseja aplicar.

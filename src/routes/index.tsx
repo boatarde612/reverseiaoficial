@@ -3,7 +3,7 @@ import { ArrowRight, ShieldCheck } from "lucide-react";
 
 import cover from "@/assets/reverse-ia-cover.webp";
 import { CreatorCard, FaqList, HowItWorks, SectionTitle, ToolsGrid } from "@/components/site/Sections";
-import { QualityCompare } from "@/components/site/Showcase";
+import { EditsShowcase, QualityCompare } from "@/components/site/Showcase";
 import { PageShell } from "@/components/site/SiteChrome";
 import { Button } from "@/components/ui/button";
 
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "REVERSE IA BETA — Sua edição. Sem complicação." },
-      { name: "description", content: "Ferramentas inteligentes para transformar seus vídeos: Reverse, RSMB, FPS MOD, qualidade, CC Dark, tracking, zoom e time remap direto no navegador." },
+      { name: "description", content: "Ferramentas inteligentes para transformar seus vídeos: Reverse, Smooth Reverse, Motion Blur, FPS MOD, qualidade, CC, Gelatina, rastreio de câmera, zoom e time remap direto no navegador." },
       { property: "og:title", content: "REVERSE IA BETA — Sua edição. Sem complicação." },
       { property: "og:description", content: "Ferramentas inteligentes para transformar seus vídeos de futebol, animes e AMVs." },
       { property: "og:type", content: "website" },
@@ -62,7 +62,12 @@ function Index() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-14">
-        <SectionTitle eyebrow="08 ferramentas" title="Nossas ferramentas" sub="Cada uma com upload, configurações e processamento próprios." />
+        <SectionTitle eyebrow="Vitrine" title="EDITS EM DESTAQUE" sub="Toque para assistir." />
+        <EditsShowcase />
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-14">
+        <SectionTitle eyebrow="10 ferramentas" title="Nossas ferramentas" sub="Cada uma com upload, configurações e processamento próprios." />
         <ToolsGrid />
       </section>
 

@@ -29,7 +29,7 @@ const SECTIONS: { t: string; p: string[] }[] = [
   },
   {
     t: "Finalidade do processamento",
-    p: ["O vídeo é usado somente para aplicar a ferramenta que você escolheu (Reverse, RSMB, FPS MOD, qualidade, tracking, zoom ou time remap) e gerar o arquivo final."],
+    p: ["O vídeo é usado somente para aplicar a ferramenta que você escolheu (Reverse, Smooth Reverse, Motion Blur, FPS MOD, qualidade, CC, Gelatina, rastreio de câmera, zoom ou time remap) e gerar o arquivo final."],
   },
   {
     t: "Armazenamento de vídeos",

@@ -20,7 +20,7 @@ const InputSchema = z.object({
 });
 
 const SYSTEM = `Você é a IA do REVERSE IA, um editor de vídeo por conversa. Responda sempre em português do Brasil, de forma curta e amigável.
-Você NÃO edita o vídeo diretamente: você escolhe e configura as 8 ferramentas reais do app, que rodam no aparelho do usuário.
+Você NÃO edita o vídeo diretamente: você escolhe e configura as 10 ferramentas reais do app, que rodam no aparelho do usuário.
 
 Ferramentas (id: configurações possíveis — use só estes valores):
 - "reverse": audio "silence"|"reverse"|"none". Limite: vídeo de até 2 s.

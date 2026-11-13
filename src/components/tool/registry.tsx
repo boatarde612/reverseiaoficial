@@ -6,6 +6,11 @@ import {
   ccDarkPipeline,
   CC_DARK_PRESET,
   fpsPipeline,
+  gelatinaPipeline,
+  smoothReversePipeline,
+  CC_PRESETS,
+  type GelatinaSettings,
+  type SmoothReverseSettings,
   qualityPipeline,
   reversePipeline,
   rsmbPipeline,
@@ -188,19 +193,22 @@ const ccDark: ToolDefinition<CcDarkSettings> = {
             <div className="grid aspect-video place-items-center rounded-xl border border-border text-xs text-muted-foreground">Carregando quadro…</div>
           )}
         </Field>
-        <button
-          type="button"
-          onClick={() => onChange({ ...CC_DARK_PRESET })}
-          className="w-full rounded-xl border border-primary/50 bg-accent px-3 py-2.5 text-sm font-semibold text-accent-foreground"
-        >
-          Restaurar preset CC Dark
-        </button>
+        <Field label="Presets">
+          <div className="grid grid-cols-3 gap-2">
+            {CC_PRESETS.map((p) => (
+              <button key={p.id} type="button" onClick={() => onChange({ ...p.value })} className="rounded-xl border border-primary/50 bg-accent px-2 py-2 text-xs font-semibold text-accent-foreground">
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </Field>
         <SliderField label="Exposição" value={value.exposure} min={-1} max={1} step={0.05} format={signed} onChange={(exposure) => set({ exposure })} />
         <SliderField label="Contraste" value={value.contrast} min={0.5} max={1.5} step={0.01} format={times} onChange={(contrast) => set({ contrast })} />
         <SliderField label="Saturação" value={value.saturation} min={0} max={1.5} step={0.01} format={times} onChange={(saturation) => set({ saturation })} />
         <SliderField label="Sombras" value={value.shadows} min={-1} max={1} step={0.05} format={signed} onChange={(shadows) => set({ shadows })} />
         <SliderField label="Realces" value={value.highlights} min={-1} max={1} step={0.05} format={signed} onChange={(highlights) => set({ highlights })} />
         <SliderField label="Temperatura" value={value.temperature} min={-1} max={1} step={0.05} format={(v) => `${signed(v)} ${v < 0 ? "frio" : v > 0 ? "quente" : ""}`} onChange={(temperature) => set({ temperature })} />
+        <SliderField label="Tinta" value={value.tint} min={-1} max={1} step={0.05} format={(v) => `${signed(v)} ${v < 0 ? "verde" : v > 0 ? "magenta" : ""}`} onChange={(tint) => set({ tint })} />
       </>
     );
   },
@@ -404,6 +412,53 @@ const remap: ToolDefinition<TimeRemapSettings> = {
   },
 };
 
+const smoothReverse: ToolDefinition<SmoothReverseSettings> = {
+  defaults: { turnSpeed: 0.4, transition: 0.4, fast: true },
+  pipeline: smoothReversePipeline,
+  needsFrame: () => false,
+  ready: () => null,
+  Settings: ({ value, onChange, info }) => (
+    <>
+      <Field label="Suavidade da virada">
+        <Chips columns={3} value={value.turnSpeed} onChange={(turnSpeed) => onChange({ ...value, turnSpeed })} options={[{ value: 0.6, label: "Leve" }, { value: 0.4, label: "Média" }, { value: 0.25, label: "Forte" }]} />
+      </Field>
+      <SliderField label="Duração da transição" value={value.transition} min={0.1} max={Math.max(0.2, Math.min(2, info?.duration ?? 2))} step={0.05} format={sec} onChange={(transition) => onChange({ ...value, transition })} />
+      <FastSwitch checked={value.fast} onChange={(fast) => onChange({ ...value, fast })} />
+      <p className="text-xs text-muted-foreground">O resultado sai sem áudio.</p>
+    </>
+  ),
+};
+
+const gelatina: ToolDefinition<GelatinaSettings> = {
+  defaults: { style: "wave", intensity: 20, speed: 1.5, range: "all", at: 0, until: 1, fast: true },
+  pipeline: gelatinaPipeline,
+  needsFrame: () => false,
+  ready: (s) => (s.range === "segment" && s.until <= s.at ? "O fim do trecho precisa ser depois do início." : null),
+  Settings: ({ value, onChange, info }) => {
+    const D = info?.duration ?? 1;
+    const set = (p: Partial<GelatinaSettings>) => onChange({ ...value, ...p });
+    return (
+      <>
+        <Field label="Estilo">
+          <Chips columns={3} value={value.style} onChange={(style) => set({ style })} options={[{ value: "wave", label: "Onda" }, { value: "wobble", label: "Balanço" }, { value: "bounce", label: "Elástico" }]} />
+        </Field>
+        <IntensityPicker value={value.intensity} onChange={(intensity) => set({ intensity })} />
+        <SliderField label="Velocidade" value={value.speed} min={0.2} max={6} step={0.1} format={(v) => `${v.toFixed(1)}x/s`} onChange={(speed) => set({ speed })} />
+        <Field label="Aplicar em">
+          <Chips value={value.range} onChange={(range) => set({ range })} options={[{ value: "all", label: "Vídeo todo" }, { value: "segment", label: "Trecho" }]} />
+        </Field>
+        {value.range === "segment" && (
+          <>
+            <SliderField label="Início" value={value.at} min={0} max={D} step={0.05} format={sec} onChange={(at) => set({ at })} />
+            <SliderField label="Fim" value={value.until} min={0} max={D} step={0.05} format={sec} onChange={(until) => set({ until })} />
+          </>
+        )}
+        <FastSwitch checked={value.fast} onChange={(fast) => set({ fast })} />
+      </>
+    );
+  },
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const TOOL_DEFS: Record<ToolId, ToolDefinition<any>> = {
   reverse,
@@ -414,4 +469,6 @@ export const TOOL_DEFS: Record<ToolId, ToolDefinition<any>> = {
   zoom,
   "time-remap": remap,
   "cc-dark": ccDark,
+  "smooth-reverse": smoothReverse,
+  gelatina,
 };

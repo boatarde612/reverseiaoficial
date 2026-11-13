@@ -26,6 +26,17 @@ export const SETTINGS_SCHEMAS = {
     shadows: z.number().min(-1).max(1),
     highlights: z.number().min(-1).max(1),
     temperature: z.number().min(-1).max(1),
+    tint: z.number().min(-1).max(1),
+  }),
+  "smooth-reverse": z.object({ turnSpeed: z.union([z.literal(0.25), z.literal(0.4), z.literal(0.6)]), transition: z.number().min(0.1).max(2), fast: z.boolean() }),
+  gelatina: z.object({
+    style: z.enum(["wave", "wobble", "bounce"]),
+    intensity,
+    speed: z.number().min(0.2).max(6),
+    range: z.enum(["all", "segment"]),
+    at: z.number().min(0),
+    until: z.number().min(0),
+    fast: z.boolean(),
   }),
   tracking: z.object({
     mode: z.enum(["frame", "object"]),
@@ -59,13 +70,15 @@ export const PLAN_DEFAULTS: { [K in ToolId]: z.infer<(typeof SETTINGS_SCHEMAS)[K
   "fps-mod": { targetFps: 60, quality: "precise", fast: true },
   qualidade: { upscale: 0, denoise: "light", sharpen: "light" },
   "cc-dark": { ...CC_DARK_PRESET },
+  "smooth-reverse": { turnSpeed: 0.4, transition: 0.4, fast: true },
+  gelatina: { style: "wave", intensity: 20, speed: 1.5, range: "all", at: 0, until: 1, fast: true },
   tracking: { mode: "frame", box: null, aspect: "9:16", smoothness: "mid" },
   zoom: { mode: "in", intensity: 20, transition: 0.6, period: 0.5, box: null, fast: true },
   "time-remap": { mode: "slow", speed: 0.5, rampSlow: 0.3, rampFast: 2, at: 0.5, until: 1, transition: 0.3, interpolate: true },
 };
 
 /** Processing order for combos: framing first, then speed, then look, motion effects last. */
-export const COMBO_ORDER: ToolId[] = ["tracking", "zoom", "time-remap", "reverse", "qualidade", "cc-dark", "rsmb", "fps-mod"];
+export const COMBO_ORDER: ToolId[] = ["tracking", "zoom", "time-remap", "reverse", "smooth-reverse", "qualidade", "cc-dark", "gelatina", "rsmb", "fps-mod"];
 
 export type SettingValue = string | number | boolean | { x: number; y: number; w: number; h: number } | null;
 export interface PlanStep {

@@ -76,7 +76,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#121016" },
       { title: "REVERSE IA BETA — Sua edição. Sem complicação." },
-      { name: "description", content: "Ferramentas inteligentes para transformar seus vídeos: Reverse, RSMB, FPS, qualidade, tracking, zoom e time remap." },
+      { name: "description", content: "Ferramentas inteligentes para transformar seus vídeos: Reverse, Smooth Reverse, Motion Blur, FPS, qualidade, CC, Gelatina, rastreio de câmera, zoom e time remap." },
       { name: "author", content: "REVERSE IA BETA" },
       { property: "og:title", content: "REVERSE IA BETA" },
       { property: "og:description", content: "Ferramentas inteligentes para transformar seus vídeos." },

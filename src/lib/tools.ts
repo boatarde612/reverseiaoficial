@@ -1,6 +1,6 @@
 // Tool catalogue: metadata only (safe for SSR). Processing lives in src/lib/video/pipelines.
 
-export type ToolId = "reverse" | "rsmb" | "fps-mod" | "qualidade" | "tracking" | "zoom" | "time-remap" | "cc-dark";
+export type ToolId = "reverse" | "rsmb" | "fps-mod" | "qualidade" | "tracking" | "zoom" | "time-remap" | "cc-dark" | "smooth-reverse" | "gelatina";
 
 export interface ToolMeta {
   id: ToolId;
@@ -22,8 +22,16 @@ export const TOOLS: ToolMeta[] = [
     heavy: false,
   },
   {
+    id: "smooth-reverse",
+    name: "SMOOTH REVERSE",
+    tagline: "Reverso com virada suave",
+    description: "Desacelera na virada e volta ao contrário com quadros intermediários reais, sem corte brusco.",
+    maxSeconds: 5,
+    heavy: true,
+  },
+  {
     id: "rsmb",
-    name: "RSMB",
+    name: "MOTION BLUR (RSMB)",
     tagline: "Motion blur por movimento",
     description: "Estima o movimento entre quadros e aplica desfoque na direção do movimento.",
     maxSeconds: 60,
@@ -47,9 +55,9 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     id: "tracking",
-    name: "TRACKING",
-    tagline: "Siga o objeto",
-    description: "Marque um jogador ou objeto e o enquadramento acompanha o movimento.",
+    name: "RASTREIO DE CÂMERA",
+    tagline: "Câmera que segue o alvo",
+    description: "Analisa o movimento da câmera, estabiliza e faz o enquadramento seguir a pessoa ou objeto marcado.",
     maxSeconds: 60,
     heavy: false,
   },
@@ -71,11 +79,19 @@ export const TOOLS: ToolMeta[] = [
   },
   {
     id: "cc-dark",
-    name: "CC DARK",
-    tagline: "Cor escura e cinematográfica",
-    description: "Correção de cor escura com sombras frias, preservando os detalhes da imagem.",
+    name: "CC — COLOR CORRECTION",
+    tagline: "Correção de cor e presets",
+    description: "Exposição, contraste, saturação, sombras, realces, temperatura e tinta, com presets como CC Dark.",
     maxSeconds: 60,
     heavy: false,
+  },
+  {
+    id: "gelatina",
+    name: "GELATINA",
+    tagline: "Deformação elástica",
+    description: "Ondula e balança a imagem como gelatina, no vídeo todo ou num trecho.",
+    maxSeconds: 60,
+    heavy: true,
   },
 ];
 

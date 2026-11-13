@@ -1,4 +1,4 @@
-import { Contrast, Crosshair, Gauge, Repeat2, Sparkles, Timer, Wind, ZoomIn, type LucideProps } from "lucide-react";
+import { Contrast, Waves, RotateCcw, Crosshair, Gauge, Repeat2, Sparkles, Timer, Wind, ZoomIn, type LucideProps } from "lucide-react";
 
 import type { ToolId } from "@/lib/tools";
 
@@ -11,6 +11,8 @@ const ICONS: Record<ToolId, React.ComponentType<LucideProps>> = {
   zoom: ZoomIn,
   "time-remap": Timer,
   "cc-dark": Contrast,
+  "smooth-reverse": RotateCcw,
+  gelatina: Waves,
 };
 
 export function ToolIcon({ id, ...props }: { id: ToolId } & LucideProps) {
